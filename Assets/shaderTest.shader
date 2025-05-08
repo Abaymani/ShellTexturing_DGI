@@ -56,7 +56,7 @@ Shader "Shaders/shaderTest"
                 if (texColor.a < _Threshold) {
                     discard; // Explicitly discard the pixel
                 }
-                return _Color * texColor; // Return transparent black
+                return _Color; // Return transparent black
                 
             }
             ENDCG
