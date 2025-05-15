@@ -3,7 +3,7 @@ using UnityEngine;
 //TEMP, created by chatGPT
 public class TileableNoiseGenerator : MonoBehaviour
 {
-    [Header("Texture Settings")]
+    
     public int textureWidth = 256;
     public int textureHeight = 256;
 
