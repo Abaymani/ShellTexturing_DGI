@@ -18,6 +18,8 @@ public class ShellScript : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        grassMaterial = new Material(grassShader);
+
         shells = new GameObject[shellCount];
         // Creates a new gameObject that is used for a layer of the shell texture
         CreateShells();
@@ -55,7 +57,7 @@ public class ShellScript : MonoBehaviour
             shells[i].GetComponent<MeshRenderer>().material.SetFloat("_thickness", thickness);
             shells[i].GetComponent<MeshRenderer>().material.SetFloat("_minLength", minLength);
             shells[i].GetComponent<MeshRenderer>().material.SetFloat("_maxLength", maxLength);
-            shells[i].GetComponent<MeshRenderer>().material.SetVector("_ShellColor", grassColor);
+            shells[i].GetComponent<MeshRenderer>().material.SetVector("_shellColor", grassColor);
         }
     }
 }

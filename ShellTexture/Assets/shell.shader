@@ -1,6 +1,5 @@
 Shader "CustomRenderTexture/New Custom Render Texture"
 {
-
     SubShader{
         Tags{
             "LightMode" = "ForwardBase"
@@ -33,40 +32,70 @@ Shader "CustomRenderTexture/New Custom Render Texture"
             float _maxLength;
             float3 _shellColor;
 
+            float Hash(int x) {
+                x = (x << 13) ^ x;
+                return frac((x * (x * x * 15731 + 789221) + 1376312589) * (1.0 / 1073741824.0));
+            }
+
             //struct that is used for our vert()
             struct VertexData{
                 float4 vertex: POSITION;
                 float3 normal: NORMAL;
-                float2 uv: TEXCORD0;
-            }
+                float2 uv: TEXCOORD0;
+            };
             
-            struct v2f_customrendertexture {
+            struct v2f {
                 float4 position : SV_POSITION;
                 float2 uv : TEXCOORD0;
-                float3 normal : TEXCOORD1;
-            }
+                float3 worldPos : TEXCOORD1;
+                float3 normal : TEXCOORD2;
+            };
 
-            v2f_customrendertexture vert(VertexData v){
-                v2f_customrendertexture i;
+            v2f vert(VertexData v){
+                v2f i;
 
                 //
                 float shellHeight = pow(((float)_shellIndex/(float)_shellCount),1.0f);
                 
+                v.vertex.xyz += v.normal * shellHeight;
+                i.normal = normalize(UnityObjectToWorldNormal(v.normal));
+                i.uv = v.uv;
+                i.worldPos = mul(unity_ObjectToWorld, v.vertex);
+                i.position = UnityObjectToClipPos(v.vertex);
+            
+                return i;
             }
             
-            float4 frag(v2f_customrendertexture IN) : SV_Target
+            float4 frag(v2f IN) : SV_Target
             {
-                float2 uv = IN.localTexcoord.xy;
-                float4 color = tex2D(_MainTex, uv) * _Color;
+                // Creates new UVs that are used the create more strands.
+                float2 newUV = IN.uv * _density;
+                
+                // The UV range is set between 0 and 1. To get a wider range for the UV coordinate
+                // we take a fractional part of the UV range and multiply it by 2 and take -1
+                // so that the rage is set to -1 and 1.
+                float2 localUV = frac(newUV) * 2 -1;
+                float localDistfromCenter = length(localUV);
 
-                // TODO: Replace this by actual code!
-                uint2 p = uv.xy * 256;
-                return countbits(~(p.x & p.y) + 1) % 2 * float4(uv, 1, 1) * color;
-            }
+                // We convert the newUV to uint2 to make it easier to use when calculating the seed
+                // and using the hash function. This was recommended to do by the guides.
+                uint2 unitUV = newUV;
+                uint seed = unitUV.x + 100 * unitUV.y * 100 * 10;
 
-            float Hash(int x) {
-                x = (x << 13) ^ x;
-                return frac((x * (x * x * 15731 + 789221) + 1376312589) * (1.0 / 1073741824.0));
+                // We use the seed as a value that we linear interpolate between the min and max length
+                float randFloat = lerp(_minLength, _maxLength, Hash(seed));
+            
+                // This is the normalized shellhight, the same as in v2f  
+                float h = (float)_shellIndex / (float)_shellCount;
+
+                if (localDistfromCenter > (_thickness *(randFloat-h))) discard;
+
+                // _WorldSpaceLightPos0 is a build in shader variable in Unity and refers to the main light source
+                float lightdir = DotClamped(IN.normal, _WorldSpaceLightPos0) *0.5f + 0.5f;
+                lightdir=lightdir*lightdir; //Needed? try without.
+
+                float ambientOcclusion = pow(h, 2); // Replace later.
+                return float4(_shellColor * lightdir * ambientOcclusion, 1.0);
             }
 
             ENDCG
