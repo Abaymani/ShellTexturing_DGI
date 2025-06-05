@@ -25,7 +25,6 @@ Shader "CustomRenderTexture/New Custom Render Texture"
 
             int _shellCount;
             int _shellIndex;
-            float _length;
             float _density;
             float _thickness;
             float _minLength;

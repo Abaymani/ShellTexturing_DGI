@@ -8,7 +8,6 @@ public class ShellScript : MonoBehaviour
     private GameObject[] shells;
 
     public int shellCount = 10;
-    public float length = 1.0f;
     public float density = 100.0f;
     public float minLength = 0.0f;
     public float maxLength = 1.0f;
@@ -52,7 +51,6 @@ public class ShellScript : MonoBehaviour
         {
             shells[i].GetComponent<MeshRenderer>().material.SetInt("_shellCount", shellCount);
             shells[i].GetComponent<MeshRenderer>().material.SetInt("_shellIndex", i);
-            shells[i].GetComponent<MeshRenderer>().material.SetFloat("_length", length);
             shells[i].GetComponent<MeshRenderer>().material.SetFloat("_density", density);
             shells[i].GetComponent<MeshRenderer>().material.SetFloat("_thickness", thickness);
             shells[i].GetComponent<MeshRenderer>().material.SetFloat("_minLength", minLength);
