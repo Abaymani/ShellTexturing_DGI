@@ -52,9 +52,8 @@ Shader "CustomRenderTexture/New Custom Render Texture"
 
             v2f vert(VertexData v){
                 v2f i;
-
-                //
-                float shellHeight = pow(((float)_shellIndex/(float)_shellCount),1.0f);
+´
+                float shellHeight = (float)_shellIndex / (float)_shellCount;
                 
                 v.vertex.xyz += v.normal * shellHeight;
                 i.normal = normalize(UnityObjectToWorldNormal(v.normal));
