@@ -77,8 +77,8 @@ Shader "CustomRenderTexture/New Custom Render Texture"
 
                 // We convert the newUV to uint2 to make it easier to use when calculating the seed
                 // and using the hash function. This was recommended to do by the guides.
-                uint2 unitUV = newUV;
-                uint seed = unitUV.x + 100 * unitUV.y * 100 * 10;
+                uint2 uintUV = newUV;
+                uint seed = uintUV.x + 100 * uintUV.y * 100 * 10;
 
                 // We use the seed as a value that we linear interpolate between the min and max length
                 float randFloat = lerp(_minLength, _maxLength, Hash(seed));
@@ -90,9 +90,9 @@ Shader "CustomRenderTexture/New Custom Render Texture"
 
                 // _WorldSpaceLightPos0 is a build in shader variable in Unity and refers to the main light source
                 float lightdir = DotClamped(IN.normal, _WorldSpaceLightPos0) *0.5f + 0.5f;
-                lightdir=lightdir*lightdir; //Needed? try without.
+                lightdir=lightdir*lightdir; 
 
-                float ambientOcclusion = pow(h, 2); // Replace later.
+                float ambientOcclusion = pow(h, 2);
                 return float4(_shellColor * lightdir * ambientOcclusion, 1.0);
             }
 
